@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Guía Transmetro{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Fuente e íconos -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --color-principal: #2f3e46;
+      --hover-sidebar: #354f52;
+      --blanco: #ffffff;
+      --gris-claro: #f1f3f6;
+      --negro-suave: #2c3e50;
+      --amarillo-claro: #fff3cd;
+      --rojo-suave: #f8d7da;
+    }
+
+    :root.dark-mode {
+      --color-principal: #1e2a2f;
+      --hover-sidebar: #1c2d33;
+      --blanco: #dadde1;
+      --gris-claro: #c8ccd1;
+      --negro-suave: #1f2c34;
+      --amarillo-claro: #ffeb99;
+      --rojo-suave: #f2bebe;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--gris-claro), var(--blanco));
+      background-size: 400% 400%;
+      animation: fondo-movimiento 15s ease infinite;
+      color: var(--negro-suave);
+    }
+
+    @keyframes fondo-movimiento {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      background: var(--color-principal);
+      color: var(--blanco);
+      padding: 1.7rem 1rem;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .contenedor {
+      max-width: 1100px;
+      margin: 2rem auto;
+      background-color: var(--blanco);
+      padding: 2.5rem 2rem;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--color-principal);
+    }
+
+    #map {
+      width: 100%;
+      height: 500px;
+      border-radius: 12px;
+      border: 1.5px solid var(--color-principal);
+      transition: border-color 0.3s ease;
+    }
+
+    #map:hover {
+      border-color: var(--hover-sidebar);
+    }
+
+    @media screen and (max-width: 768px) {
+      .contenedor {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+
+      header {
+        font-size: 1.6rem;
+      }
+
+      #map {
+        height: 400px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    Guía Pública del Transmetro
+  </header>
+
+  <div class="contenedor">
+    {% block content %}{% endblock %}
+  </div>
+
+</body>
+</html>
+
+

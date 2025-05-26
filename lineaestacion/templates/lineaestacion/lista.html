@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Estaciones por línea{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 1.8rem; margin-bottom: 1rem;">🎯 Estaciones asignadas por línea</h2>
+
+<a href="{% url 'crear_lineaestacion' %}" class="btn" style="margin-bottom: 1rem;">➕ Asignar estación</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Línea</th>
+            <th>Estación</th>
+            <th>Orden</th>
+            <th>Distancia a siguiente (km)</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in registros %}
+        <tr>
+            <td>{{ r.id_linea_estacion }}</td>
+            <td>{{ r.id_linea.nombre }}</td>
+            <td>{{ r.id_estacion.nombre }}</td>
+            <td>{{ r.orden }}</td>
+            <td>{{ r.distancia_a_siguiente|default:"0" }}</td>
+            <td>
+                <a href="{% url 'editar_lineaestacion' r.id_linea_estacion %}">🖉 Editar</a> |
+                <a href="{% url 'eliminar_lineaestacion' r.id_linea_estacion %}" onclick="return confirm('¿Eliminar esta asignación?')">🗑️ Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No se encontraron registros.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginación -->
+{% if registros.has_other_pages %}
+<nav style="margin-top: 1.5rem;">
+  <ul style="display: flex; list-style: none; padding: 0; gap: 0.5rem; flex-wrap: wrap;">
+    {% if registros.has_previous %}
+    <li><a class="btn" href="?page={{ registros.previous_page_number }}">⬅ Anterior</a></li>
+    {% endif %}
+    {% for num in registros.paginator.page_range %}
+      {% if registros.number == num %}
+        <li><span class="btn" style="background-color: #6c757d;">{{ num }}</span></li>
+      {% else %}
+        <li><a class="btn" href="?page={{ num }}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if registros.has_next %}
+    <li><a class="btn" href="?page={{ registros.next_page_number }}">Siguiente ➡</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

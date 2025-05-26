@@ -1,0 +1,50 @@
+<!-- templates/403.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso denegado</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f1f3f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 400px;
+        }
+        h1 {
+            color: #dc3545;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+        a {
+            display: inline-block;
+            margin-top: 1rem;
+            text-decoration: none;
+            color: #0d6efd;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>❌ Acceso denegado</h1>
+        <p>No tenés permisos suficientes para acceder a esta vista.</p>
+        <a href="/">Volver al inicio</a>
+    </div>
+</body>
+</html>

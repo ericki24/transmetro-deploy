@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ accion }} operador{% endblock %}
+
+{% block content %}
+<h2>{{ accion }} operador</h2>
+
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">{{ accion }}</button>
+    <a href="{% url 'lista_operadores' %}" class="btn">← Volver</a>
+</form>
+{% endblock %}

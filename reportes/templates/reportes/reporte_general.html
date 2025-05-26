@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Reportes Generales{% endblock %}
+
+{% block content %}
+<h2>📊 Reportes del Sistema</h2>
+
+<form method="get" style="margin-bottom: 1rem;">
+    <label>Selecciona un módulo:</label>
+    <select name="modelo" onchange="this.form.submit()" class="form-control" style="margin-bottom: 1rem; max-width: 300px;">
+        <option value="">-- Seleccionar --</option>
+        {% for key in modelos %}
+            <option value="{{ key }}" {% if key == modelo_seleccionado %}selected{% endif %}>{{ key|capfirst }}</option>
+        {% endfor %}
+    </select>
+
+    {% if modelo_seleccionado %}
+        <label>Filtro rápido:</label>
+        <input type="text" name="filtro" value="{{ request.GET.filtro }}" placeholder="Buscar..." style="padding: 0.4rem; margin-right: 0.5rem;">
+
+        {% if modelo_seleccionado == 'bus' %}
+            <label>Línea:</label>
+            <select name="linea">
+                <option value="">-- Todas --</option>
+                {% for linea in lineas %}
+                    <option value="{{ linea.id_linea }}" {% if filtro_linea == linea.id_linea|stringformat:"s" %}selected{% endif %}>{{ linea.nombre }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Parqueo:</label>
+            <select name="parqueo">
+                <option value="">-- Todos --</option>
+                {% for parqueo in parqueos %}
+                    <option value="{{ parqueo.id_parqueo }}" {% if filtro_parqueo == parqueo.id_parqueo|stringformat:"s" %}selected{% endif %}>{{ parqueo.direccion }}</option>
+                {% endfor %}
+            </select>
+        {% elif modelo_seleccionado == 'estacion' %}
+            <label>Municipalidad:</label>
+            <select name="municipalidad">
+                <option value="">-- Todas --</option>
+                {% for muni in municipalidades %}
+                    <option value="{{ muni.id_municipalidad }}" {% if filtro_muni == muni.id_municipalidad|stringformat:"s" %}selected{% endif %}>{{ muni.nombre }}</option>
+                {% endfor %}
+            </select>
+        {% elif modelo_seleccionado == 'acceso' %}
+            <label>Estación:</label>
+            <select name="estacion">
+                <option value="">-- Todas --</option>
+                {% for est in estaciones %}
+                    <option value="{{ est.id_estacion }}" {% if filtro_estacion == est.id_estacion|stringformat:"s" %}selected{% endif %}>{{ est.nombre }}</option>
+                {% endfor %}
+            </select>
+        {% elif modelo_seleccionado == 'guardia' %}
+            <label>Acceso:</label>
+            <select name="acceso">
+                <option value="">-- Todos --</option>
+                {% for a in accesos %}
+                    <option value="{{ a.id_acceso }}" {% if request.GET.acceso == a.id_acceso|stringformat:"s" %}selected{% endif %}>{{ a.descripcion|default:"Acceso " }}{{ a.id_acceso }}</option>
+                {% endfor %}
+            </select>
+        {% elif modelo_seleccionado == 'lineaestacion' %}
+            <label>Línea:</label>
+            <select name="linea">
+                <option value="">-- Todas --</option>
+                {% for linea in lineas %}
+                    <option value="{{ linea.id_linea }}" {% if filtro_linea == linea.id_linea|stringformat:"s" %}selected{% endif %}>{{ linea.nombre }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Estación:</label>
+            <select name="estacion">
+                <option value="">-- Todas --</option>
+                {% for est in estaciones %}
+                    <option value="{{ est.id_estacion }}" {% if filtro_estacion == est.id_estacion|stringformat:"s" %}selected{% endif %}>{{ est.nombre }}</option>
+                {% endfor %}
+            </select>
+        {% elif modelo_seleccionado == 'buspiloto' %}
+            <label>Bus:</label>
+            <select name="bus">
+                <option value="">-- Todos --</option>
+                {% for b in buses %}
+                    <option value="{{ b.id_bus }}" {% if filtro_bus == b.id_bus|stringformat:"s" %}selected{% endif %}>{{ b.placa }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Piloto:</label>
+            <select name="piloto">
+                <option value="">-- Todos --</option>
+                {% for p in pilotos %}
+                    <option value="{{ p.id_piloto }}" {% if filtro_piloto == p.id_piloto|stringformat:"s" %}selected{% endif %}>{{ p.nombre }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+
+        <button type="submit" class="btn">Filtrar</button>
+        <a href="{% url 'reporte_general' %}" class="btn">Limpiar</a>
+    {% endif %}
+</form>
+
+{% if data %}
+    <div style="margin-top: 1rem;">
+        <p><strong>{{ nombre_modelo }}</strong> — {{ data|length }} registros encontrados</p>
+
+        <a href="{% url 'exportar_excel' %}?modelo={{ modelo_seleccionado }}&filtro={{ request.GET.filtro }}" class="btn">Exportar a Excel</a>
+        <a href="{% url 'exportar_pdf' %}?modelo={{ modelo_seleccionado }}&filtro={{ request.GET.filtro }}" class="btn">Exportar a PDF</a>
+    </div>
+
+    <table style="margin-top: 1rem; width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                {% for campo in campos %}
+                    {% if not campo|lower|slice:":3" == "id_" %}
+                        <th style="text-align: left; padding: 0.5rem; background-color: #eee;">{{ campo|capfirst }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for fila in data %}
+                <tr>
+                    {% for key, valor in fila.items %}
+                        {% if not key|lower|slice:":3" == "id_" %}
+                            <td style="padding: 0.5rem;">{{ valor }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% elif modelo_seleccionado %}
+    <p>No se encontraron datos para este módulo.</p>
+{% endif %}
+{% endblock %}

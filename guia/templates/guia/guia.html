@@ -1,0 +1,281 @@
+{% extends "base_guia.html" %}
+{% block title %}Guía Transmetro{% endblock %}
+
+{% block content %}
+<a href="/" class="btn-dashboard" aria-label="Regresar al Dashboard">← Dashboard</a>
+
+<h2 style="text-align:center; color: #4a90e2;">Guía Pública del Sistema Transmetro</h2>
+
+<!-- Enlaces informativos con color y fondo -->
+<div class="barra-enlaces fija">
+  <a href="https://en.wikipedia.org/wiki/Transmetro" target="_blank">Wikipedia</a>
+  <a href="https://x.com/TransmetroGuate" target="_blank">Twitter / X</a>
+  <a href="https://www.instagram.com/transmetroguate/" target="_blank">Instagram</a>
+  <a href="https://www.muniguate.com/movilidadurbana/transmetro/" target="_blank">MuniGuate</a>
+</div>
+
+<style>
+
+:root {
+  --color-principal: #2f3e46;
+  --hover-sidebar: #354f52;
+  --blanco: #ffffff;
+  --gris-claro: #f1f3f6;
+  --negro-suave: #2c3e50;
+  --amarillo-claro: #fff3cd;
+  --rojo-suave: #f8d7da;
+}
+
+:root.dark-mode {
+  --color-principal: #1e2a2f;
+  --hover-sidebar: #1c2d33;
+  --blanco: #dadde1;
+  --gris-claro: #c8ccd1;
+  --negro-suave: #1f2c34;
+  --amarillo-claro: #ffeb99;
+  --rojo-suave: #f2bebe;
+}
+
+body {
+  background-color: var(--gris-claro);
+  color: var(--negro-suave);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+h2 {
+  color: var(--color-principal);
+}
+
+.barra-enlaces.fija {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.barra-enlaces a {
+  color: var(--color-principal);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  background-color: var(--blanco);
+  border: 1px solid var(--color-principal);
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.barra-enlaces a:hover {
+  background-color: var(--hover-sidebar);
+  color: var(--blanco);
+}
+
+.btn-dashboard {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: var(--color-principal);
+  color: var(--blanco);
+  padding: 0.5rem 1.1rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+.btn-dashboard:hover {
+  background-color: var(--hover-sidebar);
+}
+
+#map {
+  border-radius: 12px;
+  border: 2px solid var(--color-principal);
+}
+#map:hover {
+  border-color: var(--hover-sidebar);
+}
+
+#leyenda {
+  background: var(--blanco);
+  border: 1px solid #dcdcdc;
+  color: var(--negro-suave);
+}
+
+select, button {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.95rem;
+}
+
+section {
+  background: var(--blanco);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.08);
+  margin-top: 2rem;
+  text-align: center;
+}
+
+section h3 {
+  color: var(--color-principal);
+}
+
+section p {
+  color: var(--negro-suave);
+}
+</style>
+
+
+
+<!-- Filtro por línea -->
+<div style="margin-bottom: 1rem; text-align: center;">
+  <label for="lineaSelector"><strong>Filtrar por línea:</strong></label>
+  <select id="lineaSelector">
+    <option value="">Todas las líneas</option>
+  </select>
+  <button id="mostrarTodas" style="margin-left: 1rem;">Mostrar todas</button>
+</div>
+
+<!-- Mapa -->
+<div id="map" style="height: 500px; margin-bottom: 2rem;"></div>
+
+<!-- Leyenda -->
+<div id="leyenda" style="
+  position: absolute;
+  bottom: 40px;
+  left: 20px;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  font-size: 0.9rem;
+  max-width: 250px;
+  z-index: 999;
+  display: none;
+"></div>
+
+<!-- Video institucional -->
+<section style="
+  background: #e9f7fc;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.08);
+  margin-top: 2rem;
+  text-align: center;
+">
+  <h3 style="margin-bottom: 1rem; color: #00a991;">Conozca más sobre el Transmetro</h3>
+  <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; max-width:100%; border-radius: 12px;">
+    <iframe src="https://www.youtube.com/embed/0EnLCSihOHs" frameborder="0" allowfullscreen
+      style="position:absolute; top:0; left:0; width:100%; height:100%;">
+    </iframe>
+  </div>
+  <p style="margin-top: 1rem; color: #555;">Video oficial del sistema Transmetro de Guatemala. Créditos a sus creadores.</p>
+</section>
+
+<script>
+const map = L.map('map').setView([14.6349, -90.5069], 13);
+let allMarkers = [];
+let allPolylines = [];
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+fetch("/guia/datos/")
+  .then(response => response.json())
+  .then(data => {
+    const lineaSelector = document.getElementById('lineaSelector');
+    const mostrarTodasBtn = document.getElementById('mostrarTodas');
+    const leyenda = document.getElementById('leyenda');
+    const lineasUnicas = new Map();
+
+    data.rutas.forEach(ruta => {
+      if (!lineasUnicas.has(ruta.nombre)) {
+        lineasUnicas.set(ruta.nombre, ruta.color || '#3388ff');
+        const opt = document.createElement('option');
+        opt.value = ruta.nombre;
+        opt.textContent = ruta.nombre;
+        lineaSelector.appendChild(opt);
+      }
+    });
+
+    const renderLeyenda = (seleccionada = "") => {
+      let html = "<strong>Leyenda:</strong><br>";
+      const entradas = seleccionada ? [[seleccionada, lineasUnicas.get(seleccionada)]] : Array.from(lineasUnicas.entries());
+      entradas.forEach(([nombre, color]) => {
+        html += `<div style="margin-bottom: 4px;">
+          <span style="display:inline-block;width:16px;height:16px;background:${color};border-radius:3px;margin-right:6px;"></span>${nombre}
+        </div>`;
+      });
+      leyenda.innerHTML = html;
+      leyenda.style.display = "block";
+    };
+
+    const renderMapa = (lineaSeleccionada = "") => {
+      allMarkers.forEach(m => map.removeLayer(m));
+      allPolylines.forEach(p => map.removeLayer(p));
+      allMarkers = [];
+      allPolylines = [];
+
+      const estacionesFiltradas = lineaSeleccionada
+        ? data.estaciones.filter(e => e.linea === lineaSeleccionada)
+        : data.estaciones;
+
+      estacionesFiltradas.forEach(est => {
+        const marker = L.circleMarker([est.latitud, est.longitud], {
+          radius: 7,
+          fillColor: est.color,
+          color: est.color,
+          fillOpacity: 0.9,
+          weight: 2
+        }).bindPopup(
+          `<b>${est.nombre}</b><br>Municipalidad: ${est.municipalidad}<br>` +
+          `Capacidad: ${est.capacidad}<br>` +
+          `Ocupación: ${est.ocupacion}<br>` +
+          (est.sobrecupo ? "<b style='color:red;'>⚠ Sobreocupación</b>" : "")
+        ).addTo(map);
+        allMarkers.push(marker);
+      });
+
+      data.rutas.forEach(ruta => {
+        if (lineaSeleccionada && ruta.nombre !== lineaSeleccionada) return;
+        const coordinates = ruta.coordenadas.map(pair => [pair[1], pair[0]]);
+
+        fetch("https://api.openrouteservice.org/v2/directions/driving-car/geojson", {
+          method: 'POST',
+          headers: {
+            'Authorization': 'TU_API_KEY_AQUI',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ coordinates: coordinates })
+        })
+        .then(res => res.json())
+        .then(routeData => {
+          const rutaReal = L.geoJSON(routeData, {
+            style: {
+              color: ruta.color || "#3388ff",
+              weight: 4
+            }
+          }).addTo(map);
+          allPolylines.push(rutaReal);
+          if (lineaSeleccionada) {
+            map.fitBounds(rutaReal.getBounds());
+          }
+        })
+        .catch(err => console.error("Error al trazar ruta:", err));
+      });
+
+      renderLeyenda(lineaSeleccionada);
+    };
+
+    lineaSelector.addEventListener('change', () => renderMapa(lineaSelector.value));
+    mostrarTodasBtn.addEventListener('click', () => {
+      lineaSelector.value = "";
+      renderMapa("");
+    });
+
+    renderMapa();
+  });
+</script>
+{% endblock %}

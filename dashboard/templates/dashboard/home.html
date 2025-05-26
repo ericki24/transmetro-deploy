@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 1.8rem; margin-bottom: 1.5rem; color: #007A33;">📊 Dashboard del Sistema Transmetro</h2>
+
+<div id="contenedor-dashboard">
+
+<!-- KPIs deslizantes tipo barra -->
+<div style="overflow: hidden; width: 100%; background: #fff; border-radius: 6px; box-shadow: 0 1px 6px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+  <div class="kpi-ticker">
+    <div class="kpi-item" style="background-color: #e8f5e9; border-left: 6px solid #007A33;">
+      <h3>🚨 Total de alertas</h3>
+      <p>{{ total_alertas }}</p>
+    </div>
+    <div class="kpi-item" style="background-color: #fff3cd; border-left: 6px solid #ffc107;">
+      <h3>🧑‍✈️ Buses sin piloto</h3>
+      <p>{{ buses_sin_piloto }}</p>
+    </div>
+    <div class="kpi-item" style="background-color: #f8d7da; border-left: 6px solid #dc3545;">
+      <h3>🚏 Estaciones con sobrecupo</h3>
+      <p>{{ estaciones_sobrecupo|length }}</p>
+    </div>
+    <div class="kpi-item" style="background-color: #d1ecf1; border-left: 6px solid #0dcaf0;">
+      <h3>⏳ Buses con baja ocupación</h3>
+      <p>{{ buses_baja_ocupacion|length }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Alertas registradas -->
+<!-- Alertas registradas -->
+<div class="content-box" style="margin-bottom: 2rem;">
+    <h3 style="color: #007A33;">📋 Alertas registradas</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; border-radius: 6px; overflow: hidden;">
+        <thead style="background-color: #e9ecef;">
+            <tr>
+                <th style="text-align: left; padding: 0.5rem;">🚨 Mensaje</th>
+                <th style="text-align: left; padding: 0.5rem;">📍 Estación</th>
+                <th style="text-align: left; padding: 0.5rem;">📅 Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alerta in alertas %}
+            <tr style="background-color: #fff7f8; border-left: 4px solid #dc3545;">
+                <td style="padding: 0.75rem;">{{ alerta.mensaje }}</td>
+                <td style="padding: 0.75rem;">{{ alerta.id_estacion.nombre }}</td>
+                <td style="padding: 0.75rem;">{{ alerta.fecha|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" style="padding: 0.75rem;">No hay alertas registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Alertas simuladas -->
+<div class="content-box" style="margin-bottom: 2rem;">
+    <h3 style="color: #dc3545;">🚏 Estaciones con sobrecupo</h3>
+    <ul>
+        {% for est in estaciones_sobrecupo %}
+            <li><strong>{{ est.nombre }}</strong> - Capacidad: {{ est.capacidad }}, Ocupación: {{ est.ocupacion }}</li>
+        {% empty %}
+            <li>No hay estaciones con sobrecupo.</li>
+        {% endfor %}
+    </ul>
+
+    <h3 style="margin-top: 1.5rem; color: #0d6efd;">⏳ Buses con baja ocupación</h3>
+    <ul>
+        {% for bus in buses_baja_ocupacion %}
+            <li><strong>{{ bus.placa }}</strong> - Capacidad: {{ bus.capacidad }}, Ocupación: {{ bus.ocupacion }}</li>
+        {% empty %}
+            <li>No hay buses con baja ocupación.</li>
+        {% endfor %}
+    </ul>
+</div>
+</div>
+
+<!-- Gráficas -->
+<div class="content-box" style="margin-bottom: 2rem;">
+    <h3 style="color: #007A33;">🚍 Buses por línea</h3>
+    <canvas id="busesLinea"></canvas>
+</div>
+
+<div class="content-box" style="margin-bottom: 2rem;">
+    <h3 style="color: #007A33;">🏙️ Estaciones por municipalidad</h3>
+    <canvas id="estacionesMuni"></canvas>
+</div>
+
+<!-- Estilo para KPIs -->
+<style>
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+
+.kpi-ticker {
+  display: inline-flex;
+  animation: slide-kpis 25s linear infinite;
+  padding: 1rem;
+  gap: 2rem;
+}
+.kpi-item {
+  flex: 0 0 auto;
+  min-width: 220px;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+.kpi-item h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+.kpi-item p {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+.content-box {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+table, canvas {
+  max-width: 100%;
+}
+
+@keyframes slide-kpis {
+  0% { transform: translateX(100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(-100%); opacity: 0; }
+}
+</style>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx1 = document.getElementById('busesLinea').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: [{% for item in buses_por_linea %}'{{ item.linea }}',{% endfor %}],
+            datasets: [{
+                label: 'Cantidad de buses',
+                backgroundColor: '#007A33',
+                data: [{% for item in buses_por_linea %}{{ item.total }},{% endfor %}],
+                borderWidth: 1
+            }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    const ctx2 = document.getElementById('estacionesMuni').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: [{% for item in estaciones_por_muni %}'{{ item.municipalidad }}',{% endfor %}],
+            datasets: [{
+                label: 'Cantidad de estaciones',
+                backgroundColor: '#0d6efd',
+                data: [{% for item in estaciones_por_muni %}{{ item.total }},{% endfor %}],
+                borderWidth: 1
+            }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Actualización automática del contenedor de KPIs y alertas
+    setInterval(() => {
+        fetch(window.location.href)
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const nuevo = doc.querySelector('#contenedor-dashboard');
+                if (nuevo) {
+                    document.querySelector('#contenedor-dashboard').innerHTML = nuevo.innerHTML;
+                }
+            });
+    }, 25000); // cada 10 segundos
+</script>
+{% endblock %}

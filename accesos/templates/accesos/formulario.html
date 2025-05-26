@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ accion }} acceso{% endblock %}
+
+{% block content %}
+<h2>{{ accion }} acceso</h2>
+
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">{{ accion }}</button>
+    <a href="{% url 'lista_accesos' %}" class="btn">← Volver</a>
+</form>
+{% endblock %}

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Sistema Transmetro{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --color-principal: #2f3e46;
+            --hover-sidebar: #354f52;
+            --blanco: #ffffff;
+            --gris-claro: #f1f3f6;
+            --negro-suave: #2c3e50;
+            --amarillo-claro: #fff3cd;
+            --rojo-suave: #f8d7da;
+        }
+
+        :root.dark-mode {
+            --color-principal: #1e2a2f;
+            --hover-sidebar: #1c2d33;
+            --blanco: #dadde1;
+            --gris-claro: #c8ccd1;
+            --negro-suave: #1f2c34;
+            --amarillo-claro: #ffeb99;
+            --rojo-suave: #f2bebe;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--gris-claro);
+            color: var(--negro-suave);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background-color: var(--color-principal);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .sidebar h2 {
+            color: var(--blanco);
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar a {
+            color: var(--blanco);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin: 0.3rem 0;
+            display: block;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar a:hover {
+            background-color: var(--hover-sidebar);
+        }
+
+        .main-container {
+            margin-left: 240px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-container.collapsed {
+            margin-left: 0;
+        }
+
+        .header {
+            background-color: var(--blanco);
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--negro-suave);
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .header-actions {
+                justify-content: center;
+                width: 100%;
+                margin-top: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        main {
+            padding: 2rem;
+            flex-grow: 1;
+        }
+
+        .content-box {
+            background-color: var(--blanco);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        h2 {
+            color: var(--negro-suave);
+            margin-bottom: 1rem;
+        }
+
+        table, canvas {
+            max-width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e9ecef;
+        }
+
+        .btn {
+            background-color: var(--color-principal);
+            color: var(--blanco);
+            padding: 0.5rem 1rem;
+            border: none;
+            text-decoration: none;
+            border-radius: 4px;
+            display: inline-block;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: var(--hover-sidebar);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.85rem;
+            color: #6c757d;
+            background-color: var(--blanco);
+            border-top: 1px solid #dee2e6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gris-claro);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--color-principal);
+            border-radius: 6px;
+            border: 2px solid var(--gris-claro);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: var(--hover-sidebar);
+        }
+    </style>
+</head>
+<body id="body">
+    
+    <aside class="sidebar{% if request.resolver_match.url_name == 'home' %} collapsed{% endif %}" id="sidebar">
+        <h2>Transmetro</h2>
+        <a href="/">Inicio</a>
+        <a href="/municipalidades/">Municipalidades</a>
+        <a href="/lineas/">Líneas</a>
+        <a href="/estaciones/">Estaciones</a>
+        <a href="/accesos/">Accesos</a>
+        <a href="/guardias/">Guardias</a>
+        <a href="/parqueos/">Parqueos</a>
+        <a href="/buses/">Buses</a>
+        <a href="/pilotos/">Pilotos</a>
+        <a href="/operadores/">Operadores</a>
+        <a href="/alertas/">Alertas</a>
+        <a href="/lineaestacion/">Estación-Línea</a>
+        <a href="/buspiloto/">Bus-Piloto</a>
+        <a href="/reportes/">Reportes</a>
+        <a href="/mapa/">Mapa</a>
+    </aside>
+
+
+    <div class="main-container{% if request.resolver_match.url_name == 'home' %} collapsed{% endif %}" id="main">
+
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="btn" onclick="toggleSidebar()">📁</button>
+                <h1>Panel de Administración</h1>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn" onclick="toggleDarkMode()">🌙</button>
+                {% if user.is_authenticated %}
+                <form action="{% url 'admin:index' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn"><i class="fas fa-cog"></i> Admin</button>
+                </form>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <main>
+            <div class="content-box">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 6px; background-color: {% if message.tags == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if message.tags == 'success' %}#155724{% else %}#721c24{% endif %};">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <footer>
+            © 2025 Municipalidad de Guatemala · Sistema Transmetro
+        </footer>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            const root = document.documentElement;
+            root.classList.toggle('dark-mode');
+            localStorage.setItem('modoOscuro', root.classList.contains('dark-mode') ? 'true' : 'false');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar')?.classList.toggle('collapsed');
+            document.getElementById('main')?.classList.toggle('collapsed');
+        }
+
+        window.onload = () => {
+            if (localStorage.getItem('modoOscuro') === 'true') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        };
+    </script>
+</body>
+</html>
+

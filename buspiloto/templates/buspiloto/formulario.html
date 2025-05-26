@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ accion }} piloto a bus{% endblock %}
+
+{% block content %}
+<h2>{{ accion }} piloto a bus</h2>
+
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">{{ accion }}</button>
+    <a href="{% url 'lista_buspiloto' %}" class="btn">← Volver</a>
+</form>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Estaciones{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 1.8rem; margin-bottom: 1rem;">🚏 Estaciones registradas</h2>
+
+<form method="get" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <input type="text" name="q" placeholder="Buscar por nombre..." value="{{ query }}" style="padding: 0.5rem; width: 280px; border: 1px solid #ccc; border-radius: 4px;">
+    <button type="submit" class="btn">🔍 Buscar</button>
+    {% if query %}
+        <a href="{% url 'lista_estaciones' %}" class="btn">✖ Limpiar</a>
+    {% endif %}
+</form>
+
+<a href="{% url 'crear_estacion' %}" class="btn" style="margin-bottom: 1rem;">➕ Nueva estación</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Ubicación</th>
+            <th>Capacidad</th>
+            <th>Municipalidad</th>
+            <th>Latitud</th>
+            <th>Longitud</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for e in estaciones %}
+        <tr>
+            <td>{{ e.id_estacion }}</td>
+            <td>{{ e.nombre }}</td>
+            <td>{{ e.ubicacion }}</td>
+            <td>{{ e.capacidad }}</td>
+            <td>{{ e.id_municipalidad.nombre }}</td>
+            <td>{{ e.latitud }}</td>
+            <td>{{ e.longitud }}</td>
+            <td>
+                <a href="{% url 'editar_estacion' e.id_estacion %}">🖉 Editar</a> |
+                <a href="{% url 'eliminar_estacion' e.id_estacion %}" onclick="return confirm('¿Eliminar esta estación?')">🗑️ Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No se encontraron estaciones.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginación -->
+{% if estaciones.has_other_pages %}
+<nav style="margin-top: 1.5rem;">
+  <ul style="display: flex; list-style: none; padding: 0; gap: 0.5rem; flex-wrap: wrap;">
+    {% if estaciones.has_previous %}
+    <li><a class="btn" href="?page={{ estaciones.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">⬅ Anterior</a></li>
+    {% endif %}
+    {% for num in estaciones.paginator.page_range %}
+      {% if estaciones.number == num %}
+        <li><span class="btn" style="background-color: #6c757d;">{{ num }}</span></li>
+      {% else %}
+        <li><a class="btn" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if estaciones.has_next %}
+    <li><a class="btn" href="?page={{ estaciones.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente ➡</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}
+

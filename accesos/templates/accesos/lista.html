@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Accesos{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 1.8rem; margin-bottom: 1rem;">🚪 Accesos registrados</h2>
+
+<form method="get" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <input type="text" name="q" placeholder="Buscar por descripción..." value="{{ query }}" style="padding: 0.5rem; width: 280px; border: 1px solid #ccc; border-radius: 4px;">
+    <button type="submit" class="btn">🔍 Buscar</button>
+    {% if query %}
+        <a href="{% url 'lista_accesos' %}" class="btn">✖ Limpiar</a>
+    {% endif %}
+</form>
+
+<a href="{% url 'crear_acceso' %}" class="btn" style="margin-bottom: 1rem;">➕ Nuevo acceso</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Estación</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in accesos %}
+        <tr>
+            <td>{{ a.id_acceso }}</td>
+            <td>{{ a.descripcion|default:"(Sin descripción)" }}</td>
+            <td>{{ a.id_estacion.nombre }}</td>
+            <td>
+                <a href="{% url 'editar_acceso' a.id_acceso %}">🖉 Editar</a> |
+                <a href="{% url 'eliminar_acceso' a.id_acceso %}" onclick="return confirm('¿Eliminar este acceso?')">🗑️ Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No se encontraron accesos.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginación -->
+{% if accesos.has_other_pages %}
+<nav style="margin-top: 1.5rem;">
+  <ul style="display: flex; list-style: none; padding: 0; gap: 0.5rem; flex-wrap: wrap;">
+    {% if accesos.has_previous %}
+    <li><a class="btn" href="?page={{ accesos.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">⬅ Anterior</a></li>
+    {% endif %}
+    {% for num in accesos.paginator.page_range %}
+      {% if accesos.number == num %}
+        <li><span class="btn" style="background-color: #6c757d;">{{ num }}</span></li>
+      {% else %}
+        <li><a class="btn" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if accesos.has_next %}
+    <li><a class="btn" href="?page={{ accesos.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente ➡</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

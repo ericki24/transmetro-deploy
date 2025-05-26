@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Buses{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 1.8rem; margin-bottom: 1rem;">🚌 Buses registrados</h2>
+
+<form method="get" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <input type="text" name="q" placeholder="Buscar por placa..." value="{{ query }}" style="padding: 0.5rem; width: 280px; border: 1px solid #ccc; border-radius: 4px;">
+    <button type="submit" class="btn">🔍 Buscar</button>
+    {% if query %}
+        <a href="{% url 'lista_buses' %}" class="btn">✖ Limpiar</a>
+    {% endif %}
+</form>
+
+<a href="{% url 'crear_bus' %}" class="btn" style="margin-bottom: 1rem;">➕ Nuevo bus</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Placa</th>
+            <th>Capacidad</th>
+            <th>Línea</th>
+            <th>Parqueo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for b in buses %}
+        <tr>
+            <td>{{ b.id_bus }}</td>
+            <td>{{ b.placa }}</td>
+            <td>{{ b.capacidad }}</td>
+            <td>
+                {% if b.id_linea %}
+                    {{ b.id_linea.nombre }}
+                {% else %}
+                    <span style="color: #888;">(Sin línea)</span>
+                {% endif %}
+            </td>
+            <td>{{ b.id_parqueo.direccion|default:"(Sin dirección)" }}</td>
+            <td>
+                <a href="{% url 'editar_bus' b.id_bus %}">🖉 Editar</a> |
+                <a href="{% url 'eliminar_bus' b.id_bus %}" onclick="return confirm('¿Eliminar este bus?')">🗑️ Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No se encontraron buses.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginación -->
+{% if buses.has_other_pages %}
+<nav style="margin-top: 1.5rem;">
+  <ul style="display: flex; list-style: none; padding: 0; gap: 0.5rem; flex-wrap: wrap;">
+    {% if buses.has_previous %}
+    <li><a class="btn" href="?page={{ buses.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">⬅ Anterior</a></li>
+    {% endif %}
+    {% for num in buses.paginator.page_range %}
+      {% if buses.number == num %}
+        <li><span class="btn" style="background-color: #6c757d;">{{ num }}</span></li>
+      {% else %}
+        <li><a class="btn" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if buses.has_next %}
+    <li><a class="btn" href="?page={{ buses.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente ➡</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

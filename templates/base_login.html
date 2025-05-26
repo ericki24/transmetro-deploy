@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Acceso al sistema{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --color-principal: #2f3e46;
+            --hover-sidebar: #354f52;
+            --blanco: #ffffff;
+            --gris-claro: #f1f3f6;
+            --negro-suave: #2c3e50;
+            --amarillo-claro: #fff3cd;
+            --rojo-suave: #f8d7da;
+        }
+
+        :root.dark-mode {
+            --color-principal: #1e2a2f;
+            --hover-sidebar: #1c2d33;
+            --blanco: #dadde1;
+            --gris-claro: #c8ccd1;
+            --negro-suave: #1f2c34;
+            --amarillo-claro: #ffeb99;
+            --rojo-suave: #f2bebe;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--gris-claro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            background: var(--blanco);
+            padding: 2.5rem 2rem;
+            border-left: 6px solid var(--color-principal);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 420px;
+            animation: slideIn 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: var(--color-principal);
+        }
+
+        .alert {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .alert.success {
+            background: var(--amarillo-claro);
+            color: var(--hover-sidebar);
+        }
+
+        .alert.error {
+            background: var(--rojo-suave);
+            color: #721c24;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: var(--negro-suave);
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            border: 1.5px solid var(--color-principal);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--color-principal);
+            border: none;
+            border-radius: 6px;
+            color: var(--blanco);
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: var(--hover-sidebar);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-guia-publica {
+            margin-top: 1rem;
+            display: inline-block;
+            background-color: transparent;
+            color: var(--color-principal);
+            border: 1px solid var(--color-principal);
+            padding: 0.45rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-guia-publica:hover {
+            background-color: var(--color-principal);
+            color: var(--blanco);
+        }
+
+        @media screen and (max-width: 480px) {
+            .login-container {
+                margin: 1rem;
+                padding: 2rem 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Sistema Transmetro</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

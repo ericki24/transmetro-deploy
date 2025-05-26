@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        h1 { text-align: center; font-size: 16pt; margin-bottom: 10px; }
+        p { font-size: 10pt; text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+        th, td { border: 1px solid #000; padding: 4px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Reporte: {{ nombre_modelo }}</h1>
+    <p>Fecha: {{ fecha }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                {% for campo in campos %}
+                    {% if not campo|lower|slice:":3" == "id_" %}
+                        <th>{{ campo }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for fila in data %}
+                <tr>
+                    {% for key, valor in fila.items %}
+                        {% if not key|lower|slice:":3" == "id_" %}
+                            <td>{{ valor }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+
