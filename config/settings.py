@@ -21,10 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
 SECRET_KEY = config('SECRET_KEY')
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -88,21 +88,21 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        
-
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
-
-
-
+        'NAME': 'railway',
+        'USER': 'root',
+        'PASSWORD': 'HWgCDmfyzTQwDuNjzKSRypZqJtgdNYGZ',
+        'HOST': 'shortline.proxy.rlwy.net',
+        'PORT': '36597',
     }
 }
+
 
 
 
